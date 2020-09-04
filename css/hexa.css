@@ -1,0 +1,44 @@
+@charset "utf-8";
+
+/*
+*{
+	border:0;
+	padding:0;
+	margin:0;
+}
+.wrap{
+	position:fixed;
+	top:50%;
+	left:50%;
+	transform:translate(-50%,-50%);
+}
+*/
+.hexcell-map{
+	display:flex;
+	flex-direction:row;
+}
+.hexcell-line{
+	flex:1;
+	width:auto;
+	height:auto;
+}
+.hexcell-line:nth-child(2n){
+	transform:translate(-6px, -30px);	/*-34.641016151377545870548926830117pz*/
+}
+.hexcell-line:nth-child(2n-1) {
+	margin-left:-10px;
+	transform:translate(0px, 0px);
+}
+.hexcell{
+	display:block;
+    width:58px;
+    height:50px;
+	padding:0px 4px;
+	margin:7px 0;
+	background:#2196F3;
+	clip-path: polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0);
+	text-align:center;
+	font-family:serif;
+	font-size:24px;
+	color:#FFF;
+}

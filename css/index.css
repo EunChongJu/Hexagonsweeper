@@ -1,0 +1,131 @@
+@charset "UTF-8";
+
+*{
+	border:0;
+	padding:0;
+	margin:0;
+	font-family:'Montserrat', cursive;
+}
+ol, ul {
+	list-style:none;
+}
+a, a:link, a:active, a:visited, a:focus, a:hover {
+	text-decoration:none;
+}
+button{
+	text-align:center;
+	cursor:pointer;
+}
+
+
+
+/*게임 초기 화면 그룹*/
+.start{
+	display:none;
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background:#DDD;
+}
+.start-wrap{
+	position:fixed;
+	top:50%;
+	left:50%;
+	display:flex;
+	flex-direction:column;
+	width:50%;
+	padding:20px;
+	background:#FFF;
+	transform:translate(-50%, -50%);
+}
+.start-row{
+	flex:1;
+	display:flex;
+	flex-direction:row;
+}
+.start-col{
+	flex:1;
+	padding:10px;
+}
+#welcome{
+	font-family:'Montserrat', cursive;
+	font-size:2.4rem;
+}
+.start-col>label{
+	display:block;
+	width:100%;
+	padding:0px 20px;
+	text-align:right;
+	font-size:1.6rem;
+}
+.btn-lv{
+	padding:10px 15px;
+	margin-top:3rem;
+	font-size:1.8rem;
+	color:#FFF;
+}
+.btn-lv:nth-child(1) {
+	background:#F3D321;
+}
+.btn-lv:nth-child(2) {
+	background:#F39221;
+}
+.btn-lv:nth-child(3) {
+	background:#F35121;
+}
+.start-col>label>input{
+	width:50%;
+	padding:5px 15px;
+	font-size:1.4rem;
+}
+#minHeight{
+	display:inline-block;
+	width:50%;
+	padding:5px 15px;
+	text-align:left;
+	font-size:1.4rem;
+	color:#AAA;
+}
+.btn-help{
+	border-radius:10px;
+	padding:5px 10px;
+	font-size:1.5rem;
+	background:#8e21f3;
+	color:#FFF;
+}
+.btn-start{
+	padding:10px 15px;
+	font-size:1.5rem;
+	background:#2196F3;
+	color:#FFF;
+}
+.btn-reset{
+	padding:10px 15px;
+	margin-right:2rem;
+	font-size:1.5rem;
+	background:#CACACA;
+	color:#FFF;
+}
+
+
+/*게임중 화면 그룹*/
+.wrap{
+	display:block;
+	position:fixed;
+	top:50%;
+	left:50%;
+	text-align:center;
+	transform:translate(-50%, -50%);
+}
+
+
+
+
+
+/*게임 오버 후 화면 그룹*/
+.end{
+	display:none;
+}
+

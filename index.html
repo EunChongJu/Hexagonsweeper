@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>HexagonSweeper Game</title>
+		<link href="favicon.ico" rel="icon">
+		<link href="https://fonts.googleapis.com/css?family=Montserrat&amp;display=swap" rel="stylesheet">
+		<link href="css/index.css" rel="stylesheet">
+		<link href="css/hexa.css" rel="stylesheet">
+		<script src="js/script.js"></script>
+		<script src="js/hexa.js"></script>
+		<script src="js/model.js"></script>
+<!--		<script src="js/controller.js"></script>-->
+<!--		<script src="js/view.js"></script>-->
+	</head>
+	<body>
+		<!-- 게임 초기 화면 -->
+		<div class="start">
+			<div class="start-wrap">
+				<div class="start-row">
+					<h1 id="welcome">Welcome to HexagonSweeper Game!</h1>
+				</div>
+				<div class="start-row">
+					<div class="start-col">
+						<label>
+							<button class="btn-lv">Easy</button>
+							<button class="btn-lv">Middium</button>
+							<button class="btn-lv">Hard</button>
+						</label>
+					</div>
+					<div class="start-col">
+						<label>Width: <input type="number" id="width" value="10" min="6" max="36" required></label>
+						<label>(max)Height: <input type="number" id="maxHeight" value="10" min="6" max="16" required></label>
+						<label>(min)Height: <span id="minHeight">9</span></label>
+						<label>Number: <input type="number" id="number" value="1" min="1" required></label>
+					</div>
+				</div>
+				<div class="start-row">
+					<div class="start-col">
+						<button class="btn-help" onclick="">Help</button>
+					</div>
+					<div class="start-col">
+						<label>
+							<button class="btn-start" onclick="">Start!</button>
+							<button class="btn-reset" onclick="">Reset</button>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 게임 중 -->
+		<div class="wrap">
+			
+			<div class="hexcell-map" id="hexcell-map">
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+				<div class="hexcell-line">
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+					<button class="hexcell">?</button>
+				</div>
+			</div>
+			
+		</div>
+		<!-- 게임 오버 후 정산 등 화면 -->
+		<div class="end">
+			
+		</div>
+	</body>
+</html>
