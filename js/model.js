@@ -14,6 +14,9 @@ var Model = function() {
 	
 	// 생성자 호출 후 먼저 실행되는 함수
 	this.start = function(width, height, number) {
+		// start()의 설정에 오류가 있으면 생성을 거부한다.
+		if (!this.check(width, height, number)) return 'ERROR';
+		
 		// 맵의 속성 기본 값부터 설정한다.
 		mapWidth = width;
 		mapMaxHeight = height;
@@ -24,10 +27,20 @@ var Model = function() {
 		setMap();
 	};
 	
+	this.check = function(width, height, number) {	// height는 maxHeight임
+		return getMaxNumber(width, height) >= number;	// 최대 갯수가 number보다 크지 않거나 같으면 true 반환
+	};
+	// 맵에서 지뢰를 최대(지뢰배치금지구역 제외)한 넣을 수 있는 수를 구한다. (19개는 지뢰배치금지구역의 지뢰 수)
+	function getMaxNumber(w, h) {
+		var maxSize = w*(h-1);
+		maxSize += ((w%2==0)?w:w-1)/2;
+//		return ((w*(h-1)+((w%2==0) ? w : w-1))/2-19);
+		return maxSize-19;
+	}
+	
 	// 해당 아이템 값을 좌표로 조회
 	function getItem(x, y) {	// 아마 저거를 프라이빗으로 처리해야 하니 this를 function으로 바꿀 것이다.
 		return (isIndexOutOfMap(x,y) ? map[x][y] : undefined);
-		
 	}
 	
 	// 좌표로 아이템 값 배치
@@ -39,6 +52,10 @@ var Model = function() {
 	function getMap() {
 		return map;
 	}
+	// TEMP : this.getMap()
+	this.getMap = function() {
+		return getMap();
+	};
 	
 	// 맵을 세팅
 	function setMap() {
@@ -47,23 +64,41 @@ var Model = function() {
 		for (var i = 0; i < tmpMap.length; i++) {
 			tmpMap[i] = new Array(((i%2 == 0) ? mapMinHeight : mapMaxHeight));
 			
-			for (var j = 0; j < tmpMap[i].length; j++) tmpMap[i][j] = 0;
+			for (var j = 0; j < tmpMap[i].length; j++) {
+				tmpMap[i][j] = 0;
+			}
 		}
 		
 		map = tmpMap;
-	}
+	} 
 	
 	// 처음으로 셀을 눌렀을 때 호출
 	this.landStart = function(x, y) {
-		// 아래는 터치를 시작했을 때 사용하는건데, 일단 임시로 여기에 적어둠.
 		this.setNoPlacementZone(x,y);
 		this.setLandMine();
 		this.unsetNoPlacementZone(x,y);
+		return true;
 	};
 	
 	// 처음 클릭한 곳의 주변을 지뢰 배치 금지 구역으로 설정 : 원점부터 주변 2칸까지
 	this.setNoPlacementZone = function(x, y) {
+		var a = (x%2==0) ? -1 : -2;
 		
+		for (var i = -2; i <= 2; i++) {		// i : -2, -1, 0, +1, +2
+			var b = Math.abs(i);
+			
+			if (b == 1) {
+				for (var j = 0; j < 4; j++) setNoTouchZone(x+i, y+a+j);
+			}
+			else if (b == 2) {
+				for (var k = -1; k <= 1; k++) setNoTouchZone(x+i, y+k);
+			}
+			setNoTouchZone(x, y+i);	// 터치하는 부분을 포함
+		}
+	}
+	
+	function setNoTouchZone(x, y) {
+		if (validIndexForLandMines(x,y)) setItem(x, y, -2);	// 지뢰는 -1, 지뢰배치 금지는 -2
 	}
 	
 	// 지뢰를 배치 (지뢰를 전부 배치할 때까지 반복 : 지뢰 배치 후 주변 값 증산)
@@ -82,6 +117,7 @@ var Model = function() {
 				setItem(rand.x, rand.y, -1);
 				
 				// 배치한 자리의 주변을 증산한다.
+				setUpAround(rand.x, rand.y);
 				
 				// 카운트를 증산한다.
 				count++;
@@ -89,10 +125,45 @@ var Model = function() {
 		}
 		console.log('Successful Set up Land Mines!');
 	}
+	// 지뢰가 있는 곳의 주변 값을 하나씩 올린다.
+	function setUpAround(x, y) {
+		var a = ((x%2==0) ? 0 : -1);
+		
+		setUpItem(x, y-1);
+		setUpItem(x, y+1);
+		
+		for (var i = -1; i <= 1; i+=2) {
+			for (var j = a; j <= (a+1); j++) {
+				setUpItem(x+i, y+j);
+			}
+		}
+	}
+	
+	// 지뢰가 있는 곳 주변을 하나씩 증산시키는데, 지뢰가 없을 때만 적용된다.
+	function setUpItem(x, y) {
+		if (validIndexForLandMines(x,y)) setItem(x, y, getItem(x,y)+1);
+	}
 	
 	// 지뢰 배치 금지 구역 해제
 	this.unsetNoPlacementZone = function(x, y) {
+		var a = (x%2==0) ? -1 : -2;
 		
+		for (var i = -2; i <= 2; i++) {		// i : -2, -1, 0, +1, +2
+			var b = Math.abs(i);
+			
+			if (b == 1) {
+				for (var j = 0; j < 4; j++) unsetNoTouchZone(x+i, y+a+j);
+			}
+			else if (b == 2) {
+				for (var k = -1; k <= 1; k++) unsetNoTouchZone(x+i, y+k);
+			}
+			if (i!=0) unsetNoTouchZone(x, y+i);
+		}
+	}
+	// 지뢰배치금지구역 해제 단계에서 지뢰가 있거나 금지구역이 아닌 경우, 주변 값이 설정된 경우 false를 반환
+	function unsetNoTouchZone(x, y) {
+		var item = getItem(x,y);
+		if (item == -2 || (!(item >= 1 || item == undefined))) setItem(x,y,0);
 	}
 	
 	// 지뢰 배치에 있어서 인덱스를 랜덤으로 추천하는 함수
@@ -120,25 +191,9 @@ var Model = function() {
 		return !(item == -1 || item == -2 || item == undefined);
 	}
 	
-	
-	
-	// 주변 값을 하나 더하기 위해 지뢰를 찾는 함수 (근방에 지뢰가 1개 있으면 1, 3개 있으면 3이 뜨도록 하는 것)
-	
-	// 이 함수는 지뢰부터 훝어본다. 지뢰를 찾으면 주변을 증산한다. 
-	
-	// 아니면 지뢰를 배치할 때마다 주변 값을 증산을 하는 것도 나쁘지 않다.
-	// 지뢰 배치에는 지뢰가 있는 곳을 제외하기만 하면 되니깐.
-	
-	// 지뢰 탐색에서 지뢰 주변 값을 하나 증산하는 함수 (지뢰가 있으면 증산X)
-	
-	
-	
+	/*
 	// 주변을 탐색 또는 배치를 관여하는 함수. 일단은 샘플 형태로 짜놓음. 함수형 프로그래밍을 참조하여 개조할 예정
 	this.around = function(x, y) {
-		/*
-		(3,3) : (2,2), (2,3), (3,2), (3,4), (4,2), (4,3)
-		(2,3) : (2,3), (2,4), (3,3), (3,4), (4,), (4,4)
-		*/
 		var a = ((x%2==0) ? 0 : -1);
 		
 		validIndexForLandMines(x, y-1);
@@ -150,9 +205,7 @@ var Model = function() {
 			}
 		}
 	}
-	
-	
-	
+	*/
 	
 	// 인덱스 값 유효 확인 (밖으로 벗어나면 false 반환)
 	function isIndexOutOfMap(x, y) {
@@ -162,25 +215,36 @@ var Model = function() {
 		return (((x < 0) || (x >= maxWidth)) || ((y < 0) || (y >= maxHeight))) ? false : true;
 	}
 	
-	
-	
-	// 주변 값 하나 더하기 위한 함수와 배치금지구역 설정/해제 함수 등에 사용할 때 중복되는 것이 있어서
-	// 어느 지점에서부터 주변을 돌아보는 함수를 만들어 보면 좋을 것 같음.
-	
-	
-	
+	// 여기서 하나 해결해야 할 점이 하나 있다.
+	// 클릭했을 때, 0이면 주변 값을 걷어내어 1 이상이 나올 때까지 반복한다.
+	// 걷어내고 0의 지대가 없을 때까지 걷어내어 보여주는 것을 어떻게 처리할 것인가?
 	
 	// 처음 클릭할 때 호출하는 함수
 	this.firstClick = function(x,y) {
-		
-	}
+//		if (isIndexOutOfMap(x,y)) return this.landStart(x,y);	// 인덱스가 유효할 때만 실행
+//		else return false;
+		return (isIndexOutOfMap(x,y) ? this.landStart(x,y) : false);
+	};
 	
 	// 두번째 이상부터 클릭할 때 호출하는 함수
 	this.click = function(x,y) {
-		
-	}
+		return (
+			(isIndexOutOfMap(x,y)) ? (
+				(getItem(x,y)==-1) ? false : true) : undefined);
+	};	// 맵에 벗어나면 undefined, 벗어나지 않더라도 지뢰가 있으면 false, 없으면 true를 반환한다.
 };
 
-var sample = new Model();
+/*
+//// 진행하는 순서의 예시:
 
-
+// 모델이라는 생성자를 생성한다.
+var model = new Model();
+// 모델을 생성하면 맵을 만든다.
+model.start(5,7,5);
+// 맵을 만들고 나서 처음으로 누른다.
+var x = 0, y = 0;
+if (model.firstClick(x,y)) {
+	// 처음 누르고 나서 나머지 부분의 클릭을 반복한다.
+	model.click(x,y);
+}
+*/
