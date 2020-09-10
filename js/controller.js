@@ -8,7 +8,7 @@ var Controller = function() {
 	
 };
 
-var sample = new Controller();
+var controller = new Controller();
 
 function getMinHeight() {
 	
