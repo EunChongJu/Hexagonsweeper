@@ -9,11 +9,8 @@
 		<link href="css/hexa.css" rel="stylesheet">
 		<script src="js/script.js"></script>
 		<script src="js/hexa.js"></script>
-<!--		<script src="js/model.js"></script>-->
-<!--		<script src="js/controller.js"></script>-->
-<!--		<script src="js/view.js"></script>-->
 	</head>
-	<body>
+	<body onload="start();">
 		<!-- 게임 초기 화면 -->
 		<div class="start">
 			<div class="start-wrap">
@@ -23,14 +20,14 @@
 				<div class="start-row">
 					<div class="start-col">
 						<label>
-							<button class="btn-lv">Easy</button>
-							<button class="btn-lv">Middium</button>
-							<button class="btn-lv">Hard</button>
+							<button class="btn-lv" onclick="setLevel(1);">Easy</button>
+							<button class="btn-lv" onclick="setLevel(2);">Middium</button>
+							<button class="btn-lv" onclick="setLevel(3);">Hard</button>
 						</label>
 					</div>
 					<div class="start-col">
 						<label>Width: <input type="number" id="width" value="10" min="6" max="36" required></label>
-						<label>(max)Height: <input type="number" id="maxHeight" value="10" min="6" max="16" required></label>
+						<label>(max)Height: <input type="number" id="maxHeight" value="10" min="6" max="16" onchange="changeHeight();" required></label>
 						<label>(min)Height: <span id="minHeight">9</span></label>
 						<label>Number: <input type="number" id="number" value="1" min="1" required></label>
 					</div>
@@ -41,8 +38,8 @@
 					</div>
 					<div class="start-col">
 						<label>
-							<button class="btn-start" onclick="">Start!</button>
-							<button class="btn-reset" onclick="">Reset</button>
+							<button class="btn-start" onclick="gameStart();">Start!</button>
+							<button class="btn-reset" onclick="resetLevel();">Reset</button>
 						</label>
 					</div>
 				</div>

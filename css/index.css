@@ -21,7 +21,7 @@ button{
 
 /*게임 초기 화면 그룹*/
 .start{
-	display:none;
+	display:block;
 	position:fixed;
 	top:0;
 	left:0;
@@ -112,7 +112,7 @@ button{
 
 /*게임중 화면 그룹*/
 .wrap{
-	display:block;
+	display:none;
 	position:fixed;
 	top:50%;
 	left:50%;
@@ -128,4 +128,7 @@ button{
 .end{
 	display:none;
 }
+
+
+
 
