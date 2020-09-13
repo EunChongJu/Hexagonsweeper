@@ -235,12 +235,12 @@ var Hexagonsweeper = function() {
 	
 	//// 모델뷰(또는 뷰)의 코드
 	
-	this.new = function(w, h) {
-		var code = start(w,h);
+	this.showMap = function(w, h) {
+		var code = setUpMapCode(w,h);
 		document.getElementById('hexcell-map').innerHTML = code;
 	};
 	
-	function start(w,h) {
+	function setUpMapCode(w,h) {
 		var code = '';
 		for (var i = 0; i < w; i++) {
 			var maxH = (i%2==0) ? (h-1) : h;

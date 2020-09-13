@@ -4,7 +4,7 @@
 	border:0;
 	padding:0;
 	margin:0;
-	font-family:'Montserrat', cursive;
+	font-family: 'Montserrat', sans-serif;
 }
 ol, ul {
 	list-style:none;
@@ -50,7 +50,7 @@ button{
 	padding:10px;
 }
 #welcome{
-	font-family:'Montserrat', cursive;
+	font-family:'Montserrat', sans-serif;
 	font-size:2.4rem;
 }
 .start-col>label{

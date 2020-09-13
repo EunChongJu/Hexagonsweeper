@@ -85,3 +85,12 @@ function setValueOfId(id, value) {
 function changeValueOfId(id, value) {
 	document.getElementById(id).innerHTML = value;
 }
+
+// 디스플레이 설정
+function setDisplay(id, set) {
+	document.getElementById(id).style.display = set;
+}
+function sceneChange(from, to) {
+	setDisplay(from, 'none');
+	setDisplay(to, 'block');
+}
