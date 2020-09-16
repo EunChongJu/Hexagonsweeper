@@ -15,19 +15,21 @@ var Hexagonsweeper = function() {
 		if (!this.check(width, height, number)) return 'ERROR';
 		
 		// 맵의 속성 기본 값부터 설정한다.
-		mapWidth = width;
-		mapMaxHeight = height;
-		mapMinHeight = height - 1;
-		mapMineNumber = number;
+		mapWidth = parseInt(width);
+		mapMaxHeight = parseInt(height);
+		mapMinHeight = parseInt(height) - 1;
+		mapMineNumber = parseInt(number);
 		
 		// 맵을 생성한다.
 		setMap();
+		
+//		console.log('맵 생성완료 : '+width+','+height+','+number);
 	};
 	
 	this.check = function(width, height, number) {	// height는 maxHeight임
 		return getMaxNumber(width, height) >= number;	// 최대 갯수가 number보다 크지 않거나 같으면 true 반환
 	};
-	// 맵에서 지뢰를 최대(지뢰배치금지구역 제외)한 넣을 수 있는 수를 구한다. (19개는 지뢰배치금지구역의 지뢰 수)
+	// 맵에서 지뢰를 최대(지뢰배치금지구역 제외)한 넣을 수 있는 수를 구한다. (19개는 지뢰배치금지구역의 칸 수)
 	function getMaxNumber(w, h) {
 		var maxSize = w*(h-1);
 		maxSize += ((w%2==0)?w:w-1)/2;
@@ -54,16 +56,32 @@ var Hexagonsweeper = function() {
 		return getMap();
 	};
 	
+	// 사이즈 조회
+	this.getSize = function() {
+		return {
+			width: mapWidth,
+			height: mapMaxHeight
+		};
+	};
+	
+	// 옵션 조회
+	this.getOption = function() {
+		var size = this.getSize();
+		return {
+			width: size.width,
+			maxHeight: size.height,
+			minHeight: size.height-1,
+			number: mapMineNumber
+		};
+	};
+	
 	// 맵을 세팅
 	function setMap() {
 		var tmpMap = new Array(mapWidth);
 		
 		for (var i = 0; i < tmpMap.length; i++) {
 			tmpMap[i] = new Array(((i%2 == 0) ? mapMinHeight : mapMaxHeight));
-			
-			for (var j = 0; j < tmpMap[i].length; j++) {
-				tmpMap[i][j] = 0;
-			}
+			for (var j = 0; j < tmpMap[i].length; j++) tmpMap[i][j] = 0;
 		}
 		
 		map = tmpMap;
@@ -94,6 +112,7 @@ var Hexagonsweeper = function() {
 		}
 	}
 	
+	// 지뢰 배치 금지구역을 설정
 	function setNoTouchZone(x, y) {
 		if (validIndexForLandMines(x,y)) setItem(x, y, -2);	// 지뢰는 -1, 지뢰배치 금지는 -2
 	}
@@ -123,8 +142,8 @@ var Hexagonsweeper = function() {
 		console.log('Successful Set up Land Mines!');
 	}
 	// 지뢰가 있는 곳의 주변 값을 하나씩 올린다.
-	function setUpAround(x, y) {
-		var a = ((x%2==0) ? 0 : -1);
+	function setUpAround(x, y) {	// 여기서 배치금지구역에 숫자를 추가하는 것을 허용하도록 한다.
+		var a = ((x%2==0) ? 0 : -1);	// 그리고 배치금지가 해제될 때, 1 이상이면 0으로 바꿀 필요가 없도록 한다.
 		
 		setUpItem(x, y-1);
 		setUpItem(x, y+1);
@@ -188,21 +207,24 @@ var Hexagonsweeper = function() {
 		return !(item == -1 || item == -2 || item == undefined);
 	}
 	
-	/*
 	// 주변을 탐색 또는 배치를 관여하는 함수. 일단은 샘플 형태로 짜놓음. 함수형 프로그래밍을 참조하여 개조할 예정
-	this.around = function(x, y) {
+	// 해당 좌표의 주변을 함수로 받아서 탐색한다.
+	this.around = function(x, y, func) {
 		var a = ((x%2==0) ? 0 : -1);
 		
-		validIndexForLandMines(x, y-1);
-		validIndexForLandMines(x, y+1);
+//		validIndexForLandMines(x, y-1);
+//		validIndexForLandMines(x, y+1);
+		
+		func(x, y-1);
+		func(x, y+1);
 		
 		for (var i = -1; i <= 1; i+=2) {
 			for (var j = a; j <= (a+1); j++) {
-				validIndexForLandMines(x+i, y+j);
+//				validIndexForLandMines(x+i, y+j);
+				func(x+i, y+j);
 			}
 		}
 	}
-	*/
 	
 	// 인덱스 값 유효 확인 (밖으로 벗어나면 false 반환)
 	function isIndexOutOfMap(x, y) {
@@ -227,31 +249,18 @@ var Hexagonsweeper = function() {
 	
 	// 두번째 이상부터 클릭할 때 호출하는 함수
 	this.click = function(x,y) {
-		return (
-			(isIndexOutOfMap(x,y)) ? (
-				(getItem(x,y)==-1) ? false : true) : undefined);
-	};	// 맵에 벗어나면 undefined, 벗어나지 않더라도 지뢰가 있으면 false, 없으면 true를 반환한다.
-	
-	
-	//// 모델뷰(또는 뷰)의 코드
-	
-	this.showMap = function(w, h) {
-		var code = setUpMapCode(w,h);
-		document.getElementById('hexcell-map').innerHTML = code;
+		var data;
+		
+		data = getItem(x, y);
+		return data;
 	};
 	
-	function setUpMapCode(w,h) {
-		var code = '';
-		for (var i = 0; i < w; i++) {
-			var maxH = (i%2==0) ? (h-1) : h;
-			code += '<div class="hexcell-line">';
-			for (var j = 0; j < maxH; j++) {
-				code += '<button class="hexcell" id="c-'+i+'-'+j+'"></button>';
-			}
-			code += '</div>';
-		}
-		return code;
+	// 맵에 벗어나면 undefined, 벗어나지 않더라도 지뢰가 있으면 false, 없으면 true를 반환한다.
+	this.isMine = function(x, y) {
+		return ((isIndexOutOfMap(x,y)) ? ((getItem(x,y)==-1) ? false : true) : undefined);
 	}
+	
+	
 	
 	this.update = function(data) {
 		

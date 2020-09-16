@@ -17,7 +17,9 @@ button{
 	cursor:pointer;
 }
 
-
+body, html{
+/*	background:#EEE;*/
+}
 
 /*게임 초기 화면 그룹*/
 .start{
@@ -123,12 +125,43 @@ button{
 
 
 
-
 /*게임 오버 후 화면 그룹*/
 .end{
 	display:none;
 }
-
-
-
-
+.end-wrap{
+	position:fixed;
+	top:40%;
+	left:50%;
+	width:40%;
+	background:#EEE;
+	transform:translate(-50%, -50%);
+}
+.notice{
+	padding:40px 20px;
+}
+.notice>p{
+	text-align:center;
+}
+.headline{
+	font-size:1.8rem;
+}
+.line{
+	font-size:1.2rem;
+}
+.confirm, .cancel{
+	padding:10px 15px;
+	margin:30px 10px 10px 10px;
+	font-size:1rem;
+}
+.confirm{
+	background:#4CAF50;
+	color:#FFF;
+}
+.cancel{
+	background:#F44336;
+	color:#FFF;
+}
+#end-1, #end-2, #end-3{
+	display:none;
+}

@@ -12,7 +12,7 @@
 	</head>
 	<body onload="start();">
 		<!-- 게임 초기 화면 -->
-		<div class="start">
+		<div class="start" id="start">
 			<div class="start-wrap">
 				<div class="start-row">
 					<h1 id="welcome">Welcome to HexagonSweeper Game!</h1>
@@ -46,7 +46,7 @@
 			</div>
 		</div>
 		<!-- 게임 중 -->
-		<div class="wrap">
+		<div class="wrap" id="game">
 			
 			<div class="hexcell-map" id="hexcell-map">
 				<div class="hexcell-line">
@@ -165,8 +165,31 @@
 			
 		</div>
 		<!-- 게임 오버 후 정산 등 화면 -->
-		<div class="end">
-			
+		<div class="end" id="over">
+			<div class="end-wrap">
+				<div class="notice" id="end-1">
+					<p class="headline">이것은 당신의 Hexasweeper 게임 기록입니다.</p>
+					<p class="line" id="game-score">승:1 / 패:2 / 무:3</p>
+					<p class="line"><button class="confirm">Next</button></p>
+				</div>
+				<div class="notice" id="end-2">
+					<p class="headline">당신은 모든 지뢰를 제거 완료하였습니다!</p>
+					<p class="line">새로운 맵의 지뢰를 찾으시겠습니까?</p>
+					<p class="line">
+						<button class="confirm">Yes</button>
+						<button class="cancel">No</button>
+					</p>
+				</div>
+				<div class="notice" id="end-3">
+					<p class="headline">당신은 지뢰를 건드려 실패하였습니다!</p>
+					<p class="line">다시 시작하시겠습니까?</p>
+					<p class="line">
+						<button class="confirm">Yes</button>
+						<button class="cancel">No(New)</button>
+						<button class="cancel">No</button>
+					</p>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
