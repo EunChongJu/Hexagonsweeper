@@ -9,7 +9,7 @@ var Hexagonsweeper = function() {
 	var mapMinHeight = 0;
 	var mapMineNumber = 0;
 	
-	// 생성자 호출 후 먼저 실행되는 함수
+	// 생성자 호출 후 먼저 실행되는 시작 함수
 	this.start = function(width, height, number) {
 		// start()의 설정에 오류가 있으면 생성을 거부한다.
 		if (!this.check(width, height, number)) return 'ERROR';
@@ -22,39 +22,62 @@ var Hexagonsweeper = function() {
 		
 		// 맵을 생성한다.
 		setMap();
-		
-//		console.log('맵 생성완료 : '+width+','+height+','+number);
 	};
 	
-	this.check = function(width, height, number) {	// height는 maxHeight임
-		return getMaxNumber(width, height) >= number;	// 최대 갯수가 number보다 크지 않거나 같으면 true 반환
+	// 생성자의 모든 데이터를 삭제하는 종료 함수
+	this.end = function() {
+		map = null;
+		mapMaxHeight = 0;
+		mapMinHeight = 0;
+		mapMineNumber = 0;
+		mapWidth = 0;
 	};
-	// 맵에서 지뢰를 최대(지뢰배치금지구역 제외)한 넣을 수 있는 수를 구한다. (19개는 지뢰배치금지구역의 칸 수)
-	function getMaxNumber(w, h) {
-		var maxSize = w*(h-1);
-		maxSize += ((w%2==0)?w:w-1)/2;
-//		return ((w*(h-1)+((w%2==0) ? w : w-1))/2-19);
-		return maxSize-19;
-	}
 	
+	// 생성자의 맵을 초기화하는 함수 (옵션은 그대로, 맵만 새롭게 구성됨)
+	this.reset = function() {
+		map = null;
+		setMap();
+	};
+	
+	// 맵 자체를 업데이트하는 함수
+	this.update = function(data) {
+		if ((mapWidth == data.length) && (mapMinHeight == data[0].length)) {
+			map = data;
+		}
+		else {
+			return;
+		}
+	};
+	
+	// 셀 아이템 자체만을 업데이트하는 함수
+	this.updateCell = function(x, y, data) {
+		map[x][y] = data;
+	};
+	
+	//// 아마 저 아래의 함수들은 프라이빗으로 처리해야 하니 this를 function으로 바꿀 것이다.
 	// 해당 아이템 값을 좌표로 조회
-	function getItem(x, y) {	// 아마 저거를 프라이빗으로 처리해야 하니 this를 function으로 바꿀 것이다.
-		return (isIndexOutOfMap(x,y) ? map[x][y] : undefined);
-	}
+	function getItem(x, y) { return (isIndexOutOfMap(x,y) ? map[x][y] : undefined); }
+	this.getItem = function(x, y) { return getItem(x,y); }
 	
 	// 좌표로 아이템 값 배치
-	function setItem(x, y, val) {
-		map[x][y] = val;
-	}
+	function setItem(x, y, val) { map[x][y] = val; }
+	this.setItem = function(x, y, val) { setItem(x,y,val); }
 	
 	// 맵 조회
-	function getMap() {
-		return map;
-	}
-	// TEMP : this.getMap()
-	this.getMap = function() {
-		return getMap();
-	};
+	function getMap() { return map; }
+	this.getMap = function() { return getMap(); };
+	
+	// 맵을 세팅
+	function setMap() {
+		var tmpMap = new Array(mapWidth);
+		
+		for (var i = 0; i < tmpMap.length; i++) {
+			tmpMap[i] = new Array(((i%2 == 0) ? mapMinHeight : mapMaxHeight));
+			for (var j = 0; j < tmpMap[i].length; j++) tmpMap[i][j] = 0;
+		}
+		
+		map = tmpMap;
+	} 
 	
 	// 사이즈 조회
 	this.getSize = function() {
@@ -75,28 +98,16 @@ var Hexagonsweeper = function() {
 		};
 	};
 	
-	// 맵을 세팅
-	function setMap() {
-		var tmpMap = new Array(mapWidth);
-		
-		for (var i = 0; i < tmpMap.length; i++) {
-			tmpMap[i] = new Array(((i%2 == 0) ? mapMinHeight : mapMaxHeight));
-			for (var j = 0; j < tmpMap[i].length; j++) tmpMap[i][j] = 0;
-		}
-		
-		map = tmpMap;
-	} 
-	
-	// 처음으로 셀을 눌렀을 때 호출
+	// 처음으로 셀을 눌렀을 때 호출하는 함수
 	this.landStart = function(x, y) {
-		this.setNoPlacementZone(x,y);
-		this.setLandMine();
-		this.unsetNoPlacementZone(x,y);
-		return true;
+		this.setNoPlacementZone(x,y);	// 지뢰 배치금지구역을 지정한다.
+		this.setLandMine();				// 지뢰를 무작위로 배치한다.
+		this.unsetNoPlacementZone(x,y);	// 지뢰 배치 후, 배치금지구역을 해제한다.
+		return true;	// 잘됬다는 의미 (필요없음)
 	};
 	
 	// 처음 클릭한 곳의 주변을 지뢰 배치 금지 구역으로 설정 : 원점부터 주변 2칸까지
-	this.setNoPlacementZone = function(x, y) {
+	this.setNoPlacementZone = function(x, y) {	// 내가 만든건데 뭘 의미하는건진 모르겠음
 		var a = (x%2==0) ? -1 : -2;
 		
 		for (var i = -2; i <= 2; i++) {		// i : -2, -1, 0, +1, +2
@@ -139,11 +150,13 @@ var Hexagonsweeper = function() {
 				count++;
 			}
 		}
-		console.log('Successful Set up Land Mines!');
 	}
+	
 	// 지뢰가 있는 곳의 주변 값을 하나씩 올린다.
-	function setUpAround(x, y) {	// 여기서 배치금지구역에 숫자를 추가하는 것을 허용하도록 한다.
-		var a = ((x%2==0) ? 0 : -1);	// 그리고 배치금지가 해제될 때, 1 이상이면 0으로 바꿀 필요가 없도록 한다.
+	// 여기서 배치금지구역에 숫자를 추가하는 것을 허용하도록 한다.
+	// 그리고 배치금지가 해제될 때, 1 이상이면 0으로 바꿀 필요가 없도록 한다.
+	function setUpAround(x, y) {
+		var a = ((x%2==0) ? 0 : -1);
 		
 		setUpItem(x, y-1);
 		setUpItem(x, y+1);
@@ -157,7 +170,17 @@ var Hexagonsweeper = function() {
 	
 	// 지뢰가 있는 곳 주변을 하나씩 증산시키는데, 지뢰가 없을 때만 적용된다.
 	function setUpItem(x, y) {
-		if (validIndexForLandMines(x,y)) setItem(x, y, getItem(x,y)+1);
+		if (validSetUpNumber(x,y)) {
+			var item = getItem(x,y);
+			if (item == -2) setItem(x,y,1);
+			else setItem(x, y, item+1);
+		}
+	}
+	
+	// 지뢰 주변 증산을 위한 검증 함수
+	function validSetUpNumber(x, y) {
+		var item = getItem(x, y);
+		return !(item == -1 || item == undefined);
 	}
 	
 	// 지뢰 배치 금지 구역 해제
@@ -176,10 +199,20 @@ var Hexagonsweeper = function() {
 			if (i!=0) unsetNoTouchZone(x, y+i);
 		}
 	}
+	
 	// 지뢰배치금지구역 해제 단계에서 지뢰가 있거나 금지구역이 아닌 경우, 주변 값이 설정된 경우 false를 반환
 	function unsetNoTouchZone(x, y) {
 		var item = getItem(x,y);
-		if (item == -2 || (!(item >= 1 || item == undefined))) setItem(x,y,0);
+//		if (item == -2 || (!(item >= 1 || item == undefined))) setItem(x,y,0);
+		
+		if ((item == -2 || !(item >= 1)) && item!=undefined) setItem(x,y,0);
+		
+//		var isNoTouchZone = (item != -2);
+//		var isNum = (item > 0);
+//		var isNotUndefined = (item != undefined);
+//		if (isNoTouchZone && isNum && isNotUndefined) {
+//			setItem(x,y,0);
+//		}
 	}
 	
 	// 지뢰 배치에 있어서 인덱스를 랜덤으로 추천하는 함수
@@ -201,30 +234,12 @@ var Hexagonsweeper = function() {
 	}
 	
 	// 지뢰 배치에 있어서 유효한 인덱스인지 확인 (밖으로 벗어나거나 지뢰가 있거나 배치금지구역에 있으면 false를 반환)
-	/*this.validIndexForLandMines = */
+	// -2 또는 -1, undefined라면 false를 반환.
 	function validIndexForLandMines(x, y) {
 		var item = getItem(x, y);
 		return !(item == -1 || item == -2 || item == undefined);
 	}
 	
-	// 주변을 탐색 또는 배치를 관여하는 함수. 일단은 샘플 형태로 짜놓음. 함수형 프로그래밍을 참조하여 개조할 예정
-	// 해당 좌표의 주변을 함수로 받아서 탐색한다.
-	this.around = function(x, y, func) {
-		var a = ((x%2==0) ? 0 : -1);
-		
-//		validIndexForLandMines(x, y-1);
-//		validIndexForLandMines(x, y+1);
-		
-		func(x, y-1);
-		func(x, y+1);
-		
-		for (var i = -1; i <= 1; i+=2) {
-			for (var j = a; j <= (a+1); j++) {
-//				validIndexForLandMines(x+i, y+j);
-				func(x+i, y+j);
-			}
-		}
-	}
 	
 	// 인덱스 값 유효 확인 (밖으로 벗어나면 false 반환)
 	function isIndexOutOfMap(x, y) {
@@ -234,24 +249,14 @@ var Hexagonsweeper = function() {
 		return (((x < 0) || (x >= maxWidth)) || ((y < 0) || (y >= maxHeight))) ? false : true;
 	}
 	
-	// 여기서 하나 해결해야 할 점이 하나 있다.
-	// 클릭했을 때, 0이면 주변 값을 걷어내어 1 이상이 나올 때까지 반복한다.
-	// 걷어내고 0의 지대가 없을 때까지 걷어내어 보여주는 것을 어떻게 처리할 것인가?
-	
-	//// 컨트롤러 코드
-	
 	// 처음 클릭할 때 호출하는 함수
 	this.firstClick = function(x,y) {
-//		if (isIndexOutOfMap(x,y)) return this.landStart(x,y);	// 인덱스가 유효할 때만 실행
-//		else return false;
 		return (isIndexOutOfMap(x,y) ? this.landStart(x,y) : false);
 	};
 	
-	// 두번째 이상부터 클릭할 때 호출하는 함수
+	// 두번째 이상부터 클릭할 때, 해당 셀의 데이터를 반환하는 함수
 	this.click = function(x,y) {
-		var data;
-		
-		data = getItem(x, y);
+		var data = getItem(x, y);
 		return data;
 	};
 	
@@ -262,23 +267,41 @@ var Hexagonsweeper = function() {
 	
 	
 	
-	this.update = function(data) {
-		
-	};
 	
-	this.updateCell = function(x, y, data) {
-		
-	};
-	
-	this.end = function() {
-		
-	};
-	
+	/*
 	this.gameStart = function() {
 		
 	}
 	this.gameOver = function() {
 		
+	}
+	*/
+	
+	// 지뢰 배치 갯수가 유효한지 확인하는 함수
+	this.check = function(width, height, number) {	// height는 maxHeight임
+		return getMaxNumber(width, height) >= number;	// 최대 갯수가 number보다 크지 않거나 같으면 true 반환
+	};
+	
+	// 맵에서 지뢰를 최대(지뢰배치금지구역 제외)한 넣을 수 있는 수를 구한다. (19개는 지뢰배치금지구역의 칸 수)
+	function getMaxNumber(w, h) {
+		var maxSize = w*(h-1);
+		maxSize += ((w%2==0)?w:w-1)/2;
+		return maxSize-19;
+	}
+	
+	// 주변을 탐색 또는 배치를 관여하는 함수. 일단은 샘플 형태로 짜놓음. 함수형 프로그래밍을 참조하여 개조할 예정
+	// 해당 좌표의 주변을 함수로 받아서 탐색한다.
+	this.around = function(x, y, func) {
+		var a = ((x%2==0) ? 0 : -1);
+		
+		func(x, y-1);
+		func(x, y+1);
+		
+		for (var i = -1; i <= 1; i+=2) {
+			for (var j = a; j <= (a+1); j++) {
+				func(x+i, y+j);
+			}
+		}
 	}
 };
 

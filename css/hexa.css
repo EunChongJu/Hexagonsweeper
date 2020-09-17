@@ -35,19 +35,17 @@
     height:50px;
 	padding:0px 4px;
 	margin:7px 0;
-	background:#2196F3;
+	background:#FD0;
 	clip-path: polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0);
 	text-align:center;
-	font-family:serif;
 	font-size:24px;
 	color:#FFF;
 	transition:all 0.4s;
 }
-.v1{color:#2196F3;}
-.v2{color:#38883b;}
-.v3{color:#da190b;}
-.v4{color:#3921f3;}
-.v5{color:#830900;}
-.v6{color:#0c8d60;}
-.v7{color:#93188a;}
-.v8{color:#a7134c;}
+.v0{background:#FFFFFF;}
+.v1{background:#2196F3;}
+.v2{background:#38883b;}
+.v3{background:#da190b;}
+.v4{background:#3921f3;}
+.v5{background:#830900;}
+.v6{background:#0c8d60;}

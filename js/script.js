@@ -1,6 +1,12 @@
 
+// 헬프 프로그램을 실행한다.
+function activeHelp() {
+	
+}
 
-// 맵의 설정(시작화면)의 모든 함수
+//// 맵의 설정(시작화면)의 모든 함수
+
+// 레벨 선택에 따른 옵션 값 설정
 function setLevel(level) {
 	switch(level) {
 		case 1:
@@ -14,15 +20,19 @@ function setLevel(level) {
 			break;
 	}
 }
+// 맵의 옵션(맵의 크기 속성)을 설정한다.
 function setSize(width, height, number) {
 	setWidth(width);
 	setMaxHeight(height);
 	setMinHeight(height);
 	setNumber(number);
 }
+// maxHeight에 따라 minHeight가 변경되는 함수
 function changeHeight() {
 	setMinHeight(getHeight());
 }
+
+// 게임 시작 전에 보이는 input의 값을 얻거나 수정하는 함수의 집합
 function getWidth() { return getValueOfId('width'); }
 function getHeight() { return getValueOfId('maxHeight'); }
 function getNumber() { return getValueOfId('number'); }
@@ -32,34 +42,38 @@ function setMinHeight(height) { changeValueOfId('minHeight', height-1); }
 function setNumber(number) { setValueOfId('number', number); }
 function resetLevel() { setSize(10,10,1); }
 
-// 기본 설정
+
+//// 기본 설정
 var hexa = null;	// 생성자를 저장하는 변수
 var flag = false;	// 지뢰 배치 여부를 저장하는 변수
 var options = null;	// 옵션을 저장하는 변수
 var flagHexa = null;	// 깃발 또는 물음표 표시, 누른 순서 위치를 저장하는 맵 (누른 순서는 서버를 위한 것임)
 
 
-// 처음 화면이 표시될 때 호출되는 것
+// 처음 로드되고나서 화면을 표시하기 위해 호출하는 것
 function start() {
 	hexa = new Hexagonsweeper();
+	flagHexa = new Hexagonsweeper();
 }
 
-// 게임 시작을 누르면 맵을 생성하기 위해 생성자를 호출하는 함수
+// 게임을 시작하면 헥사맵 생성자를 호출하고, 디스플레이에 표시되는 함수
 function gameStart() {
-	// 옵션 값을 얻어낸다.
+	// 옵션 값을 가져온다.
 	options = getMapOptions();
 	
-	// 게임을 시작함으로써 설정된 값을 생성자에 넘긴다.
+	// 게임을 시작함으로써 설정된 값을 생성자에 넘기고 맵을 세팅한다.
 	hexa.start(options.width, options.height, options.number);
+	flagHexa.start(options.width, options.height, options.number);
 	
 	// 게임 실행중임을 디스플레이에 보여준다.
 	showMap(options.width, options.height);
 	sceneChange('start', 'game');
 	
 	// 모든 클릭을 감지하여 실행하도록 한다.
-	var allMapCell = document.querySelector("#hexcell-map");
-	allMapCell.addEventListener("mousedown", cellClickEvent, false);
+	eventActive();
 }
+
+// 시작화면에 있는 모든 옵션 값을 가져온다.
 function getMapOptions() {
 	var width = getWidth();
 	var height = getHeight();
@@ -72,13 +86,19 @@ function getMapOptions() {
 	};
 }
 
-// 맵을 디스플레이에 표시할 수 있도록 코드를 만들고 표시한다.
+// 맵의 모든 셀의 클릭 이벤트를 감지하는 함수
+function eventActive() {
+	var cellMapAll = document.querySelector("#hexcell-map");
+	cellMapAll.addEventListener("mousedown", cellClickEvent, false);
+}
+
+// 맵을 디스플레이에 표시하기 위한 함수 : 코드부터 생성하고 이를 디스플레이에 표시한다.
 function showMap(w, h) {
 	var code = setUpMapCode(w,h);
 	document.getElementById('hexcell-map').innerHTML = code;
 }
 
-// 디스플레이에 표시하기 위해 코드를 만든다.
+// 디스플레이에 표시하기 위한 코드를 생성한다.
 function setUpMapCode(w,h) {
 	var code = '';
 	for (var i = 0; i < w; i++) {
@@ -145,36 +165,60 @@ function cellClickEvent(e) {
 
 // 마우스의 왼쪽 버튼 클릭 시, 처리하는 함수
 function clickLeftButtonToCell(x, y) {
-	console.log('left click and x: '+x+', y: '+y);
+//	console.log('left click and x: '+x+', y: '+y);
 	if (!flag) {
 		firstClickCell(x,y);
 		return;
 	}
-	if (hexa.click(x,y)) {
-		cell(x,y);
+	if (hexa.click(x,y) && (flagHexa.click(x,y) != 1)) {
+		clickCell(x,y);
 //		cellColoring(x,y,'#EF8');
 	}
 }
 
 // 마우스 오른쪽 버튼 클릭 시, 처리하는 함수
 function clickRightButtonToCell(x, y) {
-	console.log('right click and x: '+x+', y: '+y);
-	cellColoring(x,y,'#FE8');
+//	console.log('right click and x: '+x+', y: '+y);
+//	cellColoring(x,y,'#FE8');
+	
+	var data = getFlagHexa(x,y);
+	
+	switch(data) {
+		case 0:
+			data++;
+			setUpFlag(x,y);
+			break;
+		case 1:
+			data++;
+			setUpQ(x,y);
+			break;
+		case 2:
+			data = 0;
+			setDown(x,y);
+			break;
+	}
+	
+	flagHexa.setItem(x,y,data);
+	
+}
+
+function getFlagHexa(x, y) {
+	return flagHexa.getItem(x,y);
 }
 
 // 처음 누르는 것이라면, 지뢰 배치를 실행하도록 한다.
 function firstClickCell(x, y) {
-	console.log('first left click and x: '+x+', y: '+y);
-	
 	if (hexa.firstClick(x, y)) {
 		flag = !flag;
-		cellColoring(x,y,'#F8E');
+		cellColoring(x,y,'#FFF');
 	}
 }
+
 // 해당 좌표를 아이디로 얻어냄
 function getCellId(x, y) {
 	return 'c-' + x + '-'+ y;
 }
+
 // 이건 뭐 컬러링용인데
 function cellColoring(x, y, hex) {
 	var id = getCellId(x,y);
@@ -187,12 +231,18 @@ function groundZero(x, y) {
 }
 
 // 해당 셀에 1 이상의 값이 나오면, 해당 숫자와 함께 컬러링을 해준다.
-function cell(x, y) {
+function clickCell(x, y) {
 	var data = hexa.click(x,y);
 	var id = getCellId(x,y);
 	var cell = document.getElementById(id);
 	
+	if (!isMine(x,y)) {	// 지뢰가 터짐
+		gameOver();
+		return;
+	}
+	cell.disabled = true;
 	cell.innerHTML = ''+data;
+	cell.classList.add('v'+data);
 }
 
 // 셀 누르는 것에 따라 게임 오버가 되는지, 계속 진행되는지에 따라 달라진다.
@@ -227,20 +277,36 @@ function around(x, y) {
 
 // 깃발을 배치
 function setUpFlag(x, y) {
-	
+	setUpData(x,y,'🚩');
 }
 
 // 물음표를 배치
 function setUpQ(x, y) {
-	
+	setUpData(x,y,'?');
+}
+
+// 배치한 어떤것이든 다시 비움
+function setDown(x, y) {
+	setUpData(x,y,'');
 }
 
 // 해당 셀의 값에 따라 깃발 또는 물음표, 없음으로 전환하도록 한다.
 
 
+// 셀에 표시된 데이터의 값을 갱신하거나 바꾸는 함수
+function setUpData(x, y, data) {
+	var id = getCellId(x,y);
+	document.getElementById(id).innerHTML = data;
+}
+
+
 // 게임 오버로 나올 경우, 게임오버로 처리하기 위해 처리
 function gameOver() {
-	sceneChange('game', 'over');
+	// 먼저 게임오버가 되었다는 것을 보여주기 위해 지뢰를 보여준다.
+	
+	// 그리고 지뢰가 터지고나서, 게임오버 창으로 전환한다.
+	
+//	sceneChange('game', 'over');
 }
 
 
