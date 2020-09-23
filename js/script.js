@@ -94,8 +94,10 @@ function eventActive() {
 
 // 맵을 디스플레이에 표시하기 위한 함수 : 코드부터 생성하고 이를 디스플레이에 표시한다.
 function showMap(w, h) {
+	var id = 'hexcell-map';
 	var code = setUpMapCode(w,h);
-	document.getElementById('hexcell-map').innerHTML = code;
+//	document.getElementById('hexcell-map').innerHTML = code;
+	changeValueOfId(id, code);
 }
 
 // 디스플레이에 표시하기 위한 코드를 생성한다.
@@ -222,7 +224,7 @@ function getCellId(x, y) {
 // 이건 뭐 컬러링용인데
 function cellColoring(x, y, hex) {
 	var id = getCellId(x,y);
-	document.getElementById(id).style.background = hex;
+	getElementId(id).style.background = hex;
 }
 
 // 해당 셀이 아무도 없는(0) 값이라면, 주변을 찾아 1 이상이 나올 때까지 처리한다.
@@ -234,7 +236,9 @@ function groundZero(x, y) {
 function clickCell(x, y) {
 	var data = hexa.click(x,y);
 	var id = getCellId(x,y);
-	var cell = document.getElementById(id);
+//	var cell = document.getElementById(id);
+	var cell = getElementId(id);
+
 	
 	if (!isMine(x,y)) {	// 지뢰가 터짐
 		gameOver();
@@ -296,7 +300,8 @@ function setDown(x, y) {
 // 셀에 표시된 데이터의 값을 갱신하거나 바꾸는 함수
 function setUpData(x, y, data) {
 	var id = getCellId(x,y);
-	document.getElementById(id).innerHTML = data;
+//	document.getElementById(id).innerHTML = data;
+	changeValueOfId(id, data);
 }
 
 
@@ -312,18 +317,21 @@ function gameOver() {
 
 // 어떤 아이디로부터 값을 얻어내는 작업을 함수화하여 간략하게 줄임
 function getValueOfId(id) {
-	return document.getElementById(id).value;
+	return getElementId(id).value;
 }
 function setValueOfId(id, value) {
-	document.getElementById(id).value = value;
+	getElementId(id).value = value;
 }
 function changeValueOfId(id, value) {
-	document.getElementById(id).innerHTML = value;
+	getElementId(id).innerHTML = value;
+}
+function getElementId(id) {
+	return document.getElementById(id);
 }
 
 // 디스플레이 설정
 function setDisplay(id, set) {
-	var element = document.getElementById(id)
+	var element = getElementId(id);
 	element.style.display = set;
 }
 function sceneChange(from, to) {
